@@ -1,0 +1,54 @@
+﻿@{
+    Layout = null;
+}
+<script src="../../Scripts/jquery-1.9.1.js"></script>
+<script src="../../Scripts/jquery.signalR-1.0.1.js"></script>
+<script src="@Url.Content("/signalr/hubs")"></script>
+<script src="../../Scripts/knockout-2.2.1.js"></script>
+
+<script type="text/javascript">
+    function Question(title,description) {
+        var self = this;
+        self.title = title;
+        self.description = description;
+    }
+
+    function QuestionsViewModel() {
+        var self = this;
+        self.questions = ko.observableArray([]);
+    }
+  
+    
+    $(function() {
+        var questionhub = $.connection.questionhub;
+        
+        var questionsViewModel = new QuestionsViewModel();
+        
+        questionhub.client.getQuestions = function (questionsFromServer) {
+           var populateQuestions=  $.map(questionsFromServer, function (question) {
+                return new Question(question["Title"], question["Description"]);
+           });
+           questionsViewModel.questions(populateQuestions);
+        };
+
+        questionhub.client.addQuestion = function(question) {
+            questionsViewModel.questions.push(new Question(question["Title"], question["Description"]));
+        };
+
+        $.connection.hub.start().done(function () {
+            questionhub.server.getQuestions();
+        });
+        
+        ko.applyBindings(questionsViewModel);
+    });
+</script>
+
+
+<div>
+    <div data-bind="foreach: questions">
+        <div class="span12" style="background-color:lavender;margin-top: 10px;">
+            <div data-bind="text: title"></div>
+            <div data-bind="text: description"></div>
+        </div>
+    </div>
+</div>

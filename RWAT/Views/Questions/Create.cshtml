@@ -1,0 +1,60 @@
+﻿@model RWAT.Models.Question
+         @{
+             Layout = "~/Views/Shared/Layout.cshtml";
+         }
+<script src="../../Scripts/jquery-1.9.1.js"></script>
+<script src="../../Scripts/jquery-ui-1.8.20.js"></script>
+<script src="@Url.Content("~/Scripts/knockout-2.2.1.js")"></script>  
+<script type="text/javascript">
+    function WordCountViewModel(initialWordCount) {
+        var self = this;
+        self.wordCount = ko.observable(initialWordCount);
+
+    }
+
+
+    $(function() {
+        var maxWordCount = 300;
+        var wordCountViewModel = new WordCountViewModel(maxWordCount);
+
+        $(document).on("keyup", "#Description", function() {
+            var value = maxWordCount - $(this).val().length;
+                    if(value > 0) {
+                        wordCountViewModel.wordCount(value);
+                    }
+                    else {
+                        wordCountViewModel.wordCount(0);
+                        $(this).val($(this).val().substring(0, maxWordCount+1));
+                    }
+                });
+        ko.applyBindings(wordCountViewModel);
+    });
+</script>
+
+<div id="askquestionwrapper" class="container span4" style="margin-left: 20%;">
+    @using (Html.BeginForm())
+    {
+        <fieldset>
+        <legend>Ask a Question</legend>
+            <div>
+                @Html.LabelFor(model=>model.Title) 
+                @Html.TextBoxFor(model=>model.Title, new Dictionary<string,object>{{"class","span5"}})
+            </div>
+
+            <div>
+                @Html.LabelFor(model=>model.Description) 
+                @Html.TextAreaFor(model=>model.Description, new Dictionary<string,object>{{"class","span8"}})
+            </div>
+            <div>
+                Number of characters left: <div data-bind="text: wordCount()" style="display: inline-block;"></div> 
+            </div>
+            <input id="askquestion" type="submit" value="Submit Your Question"/>
+        </fieldset>
+        if(!ViewData.ModelState.IsValid)
+        {
+            <div class="alert alert-error" style="margin-top: 5px;">
+                @Html.ValidationSummary()
+            </div> 
+        }
+    }
+</div>
