@@ -1,42 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Linq;
 using System.Web.Mvc;
 using Microsoft.AspNet.SignalR;
 using MongoDB.Bson;
-using MongoDB.Driver;
 using MongoDB.Driver.Builders;
 using MongoDB.Driver.Linq;
 using RWAT.Hubs;
 using RWAT.Models;
+using RWAT.Utility;
+using RWAT.ViewModel;
 
 namespace RWAT.Controllers
 {
-    public class QuestionsViewModel
-    {
-        public bool? ShowNav { get; set; }
-        public List<QuestionViewModel> QuestionViewModels { get; set; }
-    }
-
     public class QuestionsController : Controller
     {
-        private string connectionString = "MongoDb";
-
         public ActionResult Index(bool? showNav=true)
         {
-            var conn = new MongoConnectionStringBuilder(ConfigurationManager.ConnectionStrings["MongoDB"].ConnectionString);
-            MongoClient mongoClient = new MongoClient(conn.ConnectionString);
-            MongoServer mongoServer = mongoClient.GetServer();
-            MongoDatabase mongoDatabase = mongoServer.GetDatabase(conn.DatabaseName);
-            List<QuestionViewModel> questions = new List<QuestionViewModel>();
+             List<QuestionViewModel> questions = new List<QuestionViewModel>();
 
-            foreach (var question in mongoDatabase.GetCollection<Question>("questions").FindAll())
+            foreach (var question in MongoHelper.GetCollection<Question>("questions").FindAll())
             {
                 QuestionViewModel questionModel = new QuestionViewModel();
                 questionModel.Question = question;
                 User user =
-                    mongoDatabase.GetCollection<User>("users").FindOne(Query<User>.EQ(u => u.UserId, question.UserId));
+                    MongoHelper.GetCollection<User>("users").FindOne(Query<User>.EQ(u => u.UserId, question.UserId));
                 questionModel.User = user;
                 questions.Add(questionModel);
             }
@@ -47,19 +35,12 @@ namespace RWAT.Controllers
         [HttpGet]
         public ActionResult Question(string id)
         {
-            var conn =
-                  new MongoConnectionStringBuilder(
-                      ConfigurationManager.ConnectionStrings[connectionString].ConnectionString);
-
-            MongoClient mongoClient = new MongoClient(conn.ConnectionString);
-            MongoServer mongoServer = mongoClient.GetServer();
-            MongoDatabase mongoDatabase = mongoServer.GetDatabase(conn.DatabaseName);
-            ObjectId objectId = new ObjectId(id);
-            var question = mongoDatabase.GetCollection<Question>("questions").AsQueryable().FirstOrDefault(q=>q.Id == objectId);
+               ObjectId objectId = new ObjectId(id);
+            var question = MongoHelper.GetCollection<Question>("questions").AsQueryable().FirstOrDefault(q=>q.Id == objectId);
             if(question != null)
             {
                 User user =
-                    mongoDatabase.GetCollection<User>("users").AsQueryable().FirstOrDefault(u=>u.UserId == question.UserId);
+                    MongoHelper.GetCollection<User>("users").AsQueryable().FirstOrDefault(u=>u.UserId == question.UserId);
                 QuestionViewModel questionViewModel = new QuestionViewModel { Question = question, User = user };
                 return View(questionViewModel);
             }
@@ -78,33 +59,22 @@ namespace RWAT.Controllers
         {
             if (ModelState.IsValid)
             {
-                var conn =
-                    new MongoConnectionStringBuilder(
-                        ConfigurationManager.ConnectionStrings[connectionString].ConnectionString);
-                MongoClient mongoClient = new MongoClient(conn.ConnectionString);
-                MongoServer mongoServer = mongoClient.GetServer();
-                MongoDatabase mongoDatabase = mongoServer.GetDatabase(conn.DatabaseName);
-
-
-                var user = mongoDatabase.GetCollection<User>("users").AsQueryable().FirstOrDefault(u=>u.UserName==HttpContext.User.Identity.Name);
+              
+                var user = MongoHelper.GetCollection<User>("users").AsQueryable().FirstOrDefault(u=>u.UserName==HttpContext.User.Identity.Name);
 
                 if (user != null)
                 {
-                    var questions = mongoDatabase.GetCollection<Question>("questions");
+                    var questions = MongoHelper.GetCollection<Question>("questions");
+
                     user.Questions.Add(question);
                     question.DateAsked = DateTime.Now.ToShortDateString();
                     question.UserId = user.UserId;
                     questions.Save(question);
-                    QuestionViewModel questionModel = new QuestionViewModel();
-                    questionModel.Question = question;
-                    questionModel.User = user;
+                    QuestionViewModel questionModel = new QuestionViewModel {Question = question, User = user};
                     GlobalHost.ConnectionManager.GetHubContext<QuestionHub>().Clients.All.showQuestion(questionModel);
                     return RedirectToAction("Create");
                 }
-                else
-                {
-                    ModelState.AddModelError("","Could not create question.");
-                }
+                ModelState.AddModelError("","Could not create question.");
             }
             
             return View(question);
@@ -126,16 +96,10 @@ namespace RWAT.Controllers
                 return View("AnswerBox",answerModel);
             }
             
-            var conn =
-                  new MongoConnectionStringBuilder(
-                      ConfigurationManager.ConnectionStrings[connectionString].ConnectionString);
-            MongoClient mongoClient = new MongoClient(conn.ConnectionString);
-            MongoServer mongoServer = mongoClient.GetServer();
-            MongoDatabase mongoDatabase = mongoServer.GetDatabase(conn.DatabaseName);
-            var question = mongoDatabase.GetCollection<Question>("questions").AsQueryable().FirstOrDefault(q=>q.Id == new ObjectId(answerModel.QuestionId));
+                var question = MongoHelper.GetCollection<Question>("questions").AsQueryable().FirstOrDefault(q=>q.Id == new ObjectId(answerModel.QuestionId));
             if (question != null)
             {
-                var user = mongoDatabase.GetCollection<User>("users").AsQueryable().FirstOrDefault(u => u.UserId == question.UserId);
+                var user = MongoHelper.GetCollection<User>("users").AsQueryable().FirstOrDefault(u => u.UserId == question.UserId);
                 if (user != null)
                 {
                     Answer newAnswer = new Answer();
@@ -143,7 +107,7 @@ namespace RWAT.Controllers
                     newAnswer.User = user;
                     newAnswer.DateAnswered = DateTime.Now.ToShortDateString();
                     question.Answers.Add(newAnswer);
-                    mongoDatabase.GetCollection<Question>("questions").Save(question);
+                    MongoHelper.GetCollection<Question>("questions").Save(question);
                     GlobalHost.ConnectionManager.GetHubContext<QuestionHub>().Clients.All.showAnswer(newAnswer);
                     return RedirectToAction("AnswerBox", new {questionid = answerModel.QuestionId});
                 }

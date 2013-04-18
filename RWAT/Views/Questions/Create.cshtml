@@ -2,7 +2,11 @@
          @{
              Layout = "~/Views/Shared/Layout.cshtml";
          }
-
+<style>
+    .description {
+        height: 300px;
+    }
+</style>
 <script type="text/javascript">
     function WordCountViewModel(initialWordCount) {
         var self = this;
@@ -29,7 +33,7 @@
     });
 </script>
 
-<div id="askquestionwrapper" class="container span4" style="margin-left: 20%;">
+<div id="askquestionwrapper" class="container span4" style="margin-left: 20%;margin-top: 10px;">
     @using (Html.BeginForm())
     {
         <fieldset>
@@ -41,7 +45,7 @@
 
             <div>
                 @Html.LabelFor(model=>model.Description) 
-                @Html.TextAreaFor(model=>model.Description, new Dictionary<string,object>{{"class","span8"}})
+                @Html.TextAreaFor(model=>model.Description, new Dictionary<string,object>{{"class","span8 description"}})
             </div>
             <div>
                 Number of characters left: <div data-bind="text: wordCount()" style="display: inline-block;"></div> 
