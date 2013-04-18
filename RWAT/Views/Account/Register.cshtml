@@ -1,0 +1,35 @@
+﻿@model RWAT.Controllers.RegisterModel 
+
+@{
+    Layout = "";
+}
+   
+    
+<fieldset>
+    <legend>Register</legend>
+    @using(Html.BeginForm("Register","Account",FormMethod.Post,new Dictionary<string,object>{{"id","registerform"}}))
+    {
+        <p>
+            @Html.LabelFor(model=>model.UserName)
+            @Html.EditorFor(model=>model.UserName)
+        </p>
+        
+        <p>
+            @Html.LabelFor(model=>model.Email)
+            @Html.EditorFor(model=>model.Email)
+        </p>
+        
+         <p>
+            @Html.LabelFor(model=>model.Password)
+            @Html.PasswordFor(model=>model.Password)
+        </p>
+        <input type="submit" value="Register" id="register" data-url="@Url.Action("Register","Account")"/>
+    }
+    
+    @if(!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-error">
+            @Html.ValidationSummary()
+        </div>
+    }
+</fieldset>

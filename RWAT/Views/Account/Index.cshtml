@@ -1,0 +1,59 @@
+﻿@{
+    Layout = "~/Views/Shared/Layout.cshtml";
+}
+<script type="text/javascript">
+    $(function() {
+        $(document).on("submit","#registerform",function() { return false; });
+        $(document).on("submit", "#loginform", function () { return false; });
+
+        $(document).on("click","#register",function () {
+            $.ajax({
+                type: "POST",
+                url: $(this).attr('data-url'),
+                data: $("#registerform").serialize(),
+                success: function (data) {
+                    if(data["success"]!==undefined) {
+                        window.location = data["success"];
+                    }
+                    else {
+                        $("#registerwrapper").html(data);
+                    }
+                }
+            });
+                
+        });
+        
+        $(document).on("click", "#login", function () {
+
+
+            $.ajax({
+                type: "POST",
+                url: $(this).attr('data-url'),
+                data: $("#loginform").serialize(),
+                success: function (data) {
+                    if (data["success"] !== undefined) {
+                        window.location = data["success"];
+                    }
+                    else {
+                        $("#loginwrapper").html(data);
+                    }
+                }
+            });
+
+        });
+    });
+</script>
+
+<div class="container span5" style="margin-left: 10%;margin-top: 10px;">
+    <div id="registerwrapper" class="span5" style="background-color:lavender;padding: 5px;">
+        @{
+            Html.RenderAction("Register");
+        }
+    </div>
+
+    <div id="loginwrapper" class="span5" style="background-color:lavender;margin-top: 10px;padding: 5px;">
+        @{
+            Html.RenderAction("Login");
+        }
+    </div>
+</div>

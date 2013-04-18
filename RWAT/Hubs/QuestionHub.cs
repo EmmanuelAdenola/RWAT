@@ -1,29 +1,20 @@
-﻿using System.Collections.Generic;
-using System.Configuration;
-using Microsoft.AspNet.SignalR;
+﻿using Microsoft.AspNet.SignalR;
 using Microsoft.AspNet.SignalR.Hubs;
-using MongoDB.Driver;
 using RWAT.Models;
-using System.Linq;
+
 namespace RWAT.Hubs
 {
     [HubName("questionhub")]
     public class QuestionHub : Hub
     {
-        public void GetQuestions()
+       public void ShowQuestion(QuestionViewModel questionModel)
         {
-            var conn = new MongoConnectionStringBuilder(ConfigurationManager.ConnectionStrings["MongoDB"].ConnectionString);
-            MongoClient mongoClient = new MongoClient(conn.ConnectionString);
-            MongoServer mongoServer = mongoClient.GetServer();
-            MongoDatabase mongoDatabase = mongoServer.GetDatabase(conn.DatabaseName);
-
-            IEnumerable<User> users = mongoDatabase.GetCollection<User>("users").FindAll();
-            Clients.Caller.getQuestions(users.SelectMany(u=>u.Questions).ToList());
+            Clients.Caller.showQuestion(questionModel);
         }
 
-        public void AddQuestion(Question question)
+        public void ShowAnswer(Answer  answer)
         {
-            Clients.Caller.addQuestion(question);
+            Clients.Caller.showAnswer(answer);
         }
     }
 }

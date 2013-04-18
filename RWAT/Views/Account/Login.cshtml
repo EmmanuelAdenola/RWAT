@@ -1,0 +1,32 @@
+﻿@model RWAT.Controllers.LoginModel
+
+@{
+    Layout = null;
+}
+
+
+<fieldset>
+    <legend>Login</legend>
+        @using(Html.BeginForm("Index","Account",FormMethod.Post,new Dictionary<string,object>{{"id","loginform"}}))
+
+        {
+            <p>
+                @Html.LabelFor(model => model.UserName)
+                @Html.EditorFor(model => model.UserName)
+            </p>
+
+            <p>
+                @Html.LabelFor(model => model.Password)
+                @Html.PasswordFor(model => model.Password)
+            </p>
+            <input type="submit" value="Login" id="login" data-url="@Url.Action("Login", "Account")"/>
+             
+             if (!ViewData.ModelState.IsValid)
+             {
+                 <div class="alert alert-error">
+                     @Html.ValidationSummary()
+                 </div>
+             }
+        }
+
+</fieldset>

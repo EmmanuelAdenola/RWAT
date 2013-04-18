@@ -1,0 +1,45 @@
+﻿@model RWAT.Models.AnswerModel  
+@{Layout = null;}    
+<style>
+    #Answer {
+        width: 400px;
+        height: 200px;
+    }
+</style>     
+<div class="container span7" id="answerboxwrapper" style="margin-top: 20px;width: inherit;height: auto;" data-posturl="@Url.Action("Answer","Questions")">
+    <script type="text/javascript">
+        $(function () {
+            $("#submitanswer").submit(function () { return false; });
+
+            $("#submitanswer").click(function() {
+                $.ajax({
+                    type: "POST",
+                    url: $("#answerboxwrapper").attr('data-posturl'),
+                    data:  $("#answer").serialize(),
+                    success:function (data) {
+                        $("#ajaxwriter").html(data);
+                    }
+                });
+            });
+        })
+    </script>
+    <div id="ajaxwriter" style="width: auto;">
+        <fieldset>
+            <legend> Your Answer: </legend>
+            @using(Html.BeginForm("Answer","Questions",null,FormMethod.Post, new Dictionary<string, object>{{"id","answer"}}))
+            {
+                @Html.HiddenFor(model=>model.QuestionId)
+                    @Html.TextAreaFor(model => model.Answer);
+                <p>
+                    <input type="button" class="btn" value="Submit" id="submitanswer"/>
+                </p>
+                    if (!ViewData.ModelState.IsValid)
+                    {
+                            <div class="success alert-error">
+                                @Html.ValidationSummary()
+                            </div>
+                    }
+            }
+        </fieldset>
+    </div>
+</div>

@@ -1,54 +1,55 @@
-﻿@{
+﻿@using MongoDB.Bson
+@model RWAT.Controllers.QuestionsViewModel
+@{
     Layout = null;
+    if(Model.ShowNav == true)
+    {
+        Layout = "~/Views/Shared/Layout.cshtml";
+      
+    }
 }
-<script src="../../Scripts/jquery-1.9.1.js"></script>
-<script src="../../Scripts/jquery.signalR-1.0.1.js"></script>
-<script src="@Url.Content("/signalr/hubs")"></script>
-<script src="../../Scripts/knockout-2.2.1.js"></script>
 
 <script type="text/javascript">
-    function Question(title,description) {
+    function QuestionWrapper(questionWrapper) {
         var self = this;
-        self.title = title;
-        self.description = description;
+        self.question = questionWrapper["Question"];
+        self.user = questionWrapper["User"];
+        self.Link = "/Questions/Question?id="+self.question._id;
     }
 
-    function QuestionsViewModel() {
+    function QuestionsViewModel(initValue) {
         var self = this;
-        self.questions = ko.observableArray([]);
+        self.questions = ko.observableArray(initValue);
     }
   
     
-    $(function() {
+    $(function () {
         var questionhub = $.connection.questionhub;
-        
-        var questionsViewModel = new QuestionsViewModel();
-        
-        questionhub.client.getQuestions = function (questionsFromServer) {
-           var populateQuestions=  $.map(questionsFromServer, function (question) {
-                return new Question(question["Title"], question["Description"]);
-           });
-           questionsViewModel.questions(populateQuestions);
-        };
 
-        questionhub.client.addQuestion = function(question) {
-            questionsViewModel.questions.push(new Question(question["Title"], question["Description"]));
-        };
-
-        $.connection.hub.start().done(function () {
-            questionhub.server.getQuestions();
+        var questionsArray = $.map($.parseJSON('@Html.Raw(Model.QuestionViewModels.ToJson())'), function (questionWrapper) {
+            return new QuestionWrapper(questionWrapper);
         });
         
+        var questionsViewModel = new QuestionsViewModel(questionsArray);
         ko.applyBindings(questionsViewModel);
+
+
+        questionhub.client.showQuestion = function(questionWrapper) {
+            questionsViewModel.questions.push(new QuestionWrapper(questionWrapper));
+        };
+
+        $.connection.hub.start();
+
     });
 </script>
-
-
-<div>
-    <div data-bind="foreach: questions">
-        <div class="span12" style="background-color:lavender;margin-top: 10px;">
-            <div data-bind="text: title"></div>
-            <div data-bind="text: description"></div>
-        </div>
+<div class="container" style="margin-top: 5%;">
+    <h3>All Questions</h3>
+    <hr/>
+</div>
+<div data-bind="foreach: questions" style="height: auto;margin-top: 3%;margin-left: 20%;" class="container span7">
+    <div style="background-color:lavender;margin-top: 10px;width:inherit;height:auto;">
+        <a data-bind="attr:{href: Link , title: question.Title}, text: question.Title"></a>
+        <div data-bind="text: question.Description"></div>
+         <div data-bind="text: user.UserName"></div>
     </div>
 </div>

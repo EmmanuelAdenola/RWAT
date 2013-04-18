@@ -1,11 +1,50 @@
 ﻿<!DOCTYPE>
 <html>
-<head>
-    <title></title>
-    <link href="../../Content/bootstrap.css" rel="stylesheet" />
-</head>
-<body>
-    @RenderBody()
-</body>
+    <head>
+        <title></title>
+        <link href="../../Content/bootstrap.css" rel="stylesheet" />
+        <script src="../../Scripts/jquery-1.9.1.js"></script>
+        <script src="../../Scripts/jquery-ui-1.8.20.js"></script>
+        <script src="../../Scripts/jquery.signalR-1.0.1.js"></script>
+        <script src="@Url.Content("/signalr/hubs")"></script>
+        <script src="@Url.Content("~/Scripts/knockout-2.2.1.js")"></script>  
+        
+        <style>
+            .links {
+                display: inline-block;padding: 5px;background-color: lavender;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            
+          
+            <div class="links">
+                @Html.ActionLink("Home","Index","Home")
+            </div>
+
+            <div class="links">
+                @Html.ActionLink("Questions","Index","Questions")
+            </div>
+
+            <div class="links">
+                @Html.ActionLink("Ask Question","Create","Questions")
+            </div>
+            
+            @if(!User.Identity.IsAuthenticated)
+            {
+                <div class="links">
+                    @Html.ActionLink("Sign in","Index","Account")
+                </div>
+            }
+            else
+            {
+                <div class="links">
+                    @Html.ActionLink("Sign out","SignOut","Account")</div>
+            }
+             
+        </div>
+        @RenderBody()
+    </body>
 
 </html>
