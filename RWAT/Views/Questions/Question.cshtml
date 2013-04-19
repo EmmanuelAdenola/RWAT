@@ -14,30 +14,39 @@
         self.currentVote = ko.observable(voteModel["CurrentVote"]);
         self.imagepath = ko.observable(voteModel["ImagePath"]);
     }
+    
     function Question(question) {
         var self = this;
         self.question = question["Question"];
         self.user = question["User"];
         self.voteViewModel =new VoteViewModel(question["VoteViewModel"]);
         self.gravatar = "http://www.gravatar.com/avatar/" + question["User"]["HashedEmail"] + "?d=identicon&f=y&s=50";
+        
         var answerArray = $.map(question["Answers"], function (answer) {
             answer.gravatar = "http://www.gravatar.com/avatar/" + answer["Answerer"]["HashedEmail"] + "?d=identicon&f=y&s=50";
-            return answer;
+            return new AnswerViewModel(answer);
         });
 
         self.answers = ko.observableArray(answerArray);
+        
     }
     
+    function AnswerViewModel(answer) {
+        this.answer = answer.Answer;
+        this.answerer = answer.Answerer;
+        this.gravatar = answer.gravatar;
+        this.voteViewModel = new VoteViewModel(answer["VoteViewModel"]);
+    }
     
     $(function() {
-        var initialQuestion = $.parseJSON('@Html.Raw(Model.ToJson())');
+        var initialQuestion = @Html.Raw(Model.ToJson());
         var question = new Question(initialQuestion);
         var questionhub = $.connection.questionhub;
         var answerhub = $.connection.answerhub;
 
         answerhub.client.showAnswer = function (answer) {
-            answer.gravatar = "http://www.gravatar.com/avatar/"+answer["Answerer"]["HashedEmail"]+"?d=identicon&f=y&s=50";
-            question.answers.push(answer);
+            answer.gravatar = "http://www.gravatar.com/avatar/" + answer["Answerer"]["HashedEmail"] + "?d=identicon&f=y&s=50";
+            question.answers.push(new AnswerViewModel(answer));
         };
 
         questionhub.client.updateQuestionVote = function (currentVote,errorMessage) {
@@ -57,17 +66,74 @@
         };
         
         $("#up").click(function () {
-            var currVote = question.voteViewModel.currentVote() * 0;
-            question.voteViewModel.currentVote(currVote + 5);
             question.voteViewModel.upVotePath( question.voteViewModel.voteViewModel["UpVotePath"]);
             questionhub.server.upVote(question.question["_id"]);
         });
         
         $("#down").click(function () {
-            var currVote = question.voteViewModel.currentVote() * 0;
-            question.voteViewModel.currentVote(currVote - 2);
             question.voteViewModel.downVotePath(question.voteViewModel.voteViewModel["DownVotePath"]);
             questionhub.server.downVote(question.question["_id"]);
+        });
+
+        answerhub.client.updateAnswerVote = function (answerid, currentVote, errorMessage) {
+            var answers = question.answers();
+            for (var idx in answers) {
+                var currAnswer = answers[idx];
+                if (answerid == currAnswer["answer"]["_id"]) {
+                    currAnswer.voteViewModel.currentVote(currentVote);
+                    if (errorMessage != null && errorMessage != undefined && errorMessage != "") {
+                        alert(errorMessage);
+                    }
+                }
+            }
+        };
+
+        answerhub.client.updateAnswerUpVoteImage = function (answerid, img) {
+            var answers = question.answers();
+
+            for (var idx in answers) {
+                var currAnswer = answers[idx];
+                if (answerid == currAnswer["answer"]["_id"]) {
+                    currAnswer.voteViewModel.downVotePath(currAnswer.voteViewModel.voteViewModel.NoDownVotePath);
+                    currAnswer.voteViewModel.upVotePath(img);
+                }
+            }
+        };
+        
+        answerhub.client.updateAnswerDownVoteImage = function (answerid, img) {
+            var answers = question.answers();
+            for (var idx in answers) {
+                var currAnswer = answers[idx];
+                if (answerid == currAnswer["answer"]["_id"]) {
+                    currAnswer.voteViewModel.upVotePath(currAnswer.voteViewModel.voteViewModel.NoUpVotePath);
+                    currAnswer.voteViewModel.downVotePath(img);
+                }
+            }
+          
+        };
+        
+        $(document).on("click", ".voteanswerup", function () {
+            var idSearch = $(this).attr('data-id');
+            var answers = question.answers();
+            for (var idx in answers) {
+                var currAnswer = answers[idx];
+                if (idSearch == currAnswer["answer"]["_id"]) {
+                    currAnswer.voteViewModel.upVotePath(currAnswer.voteViewModel.voteViewModel["UpVotePath"]);
+                    answerhub.server.upVote(currAnswer["answer"]["_id"]);
+                }
+            }
+        });
+        
+        $(document).on("click", ".voteanswerdown", function () {
+            var idSearch = $(this).attr('data-id');
+            var answers = question.answers();
+            for (var idx in answers) {
+                var currAnswer = answers[idx];
+                if (idSearch == currAnswer["answer"]["_id"]) {
+                    currAnswer.voteViewModel.downVotePath(question.voteViewModel.voteViewModel["DownVotePath"]);
+                    answerhub.server.downVote(currAnswer.answer["_id"]);
+                }
+            }
         });
         
         $.connection.hub.start();
@@ -77,14 +143,14 @@
 
 </script>
 
-<div class="container span7" style="margin-left:20%;margin-top: 5%;padding-bottom: 100px;">
+<div class="container span9" style="margin-left:20%;margin-top: 5%;padding-bottom: 100px;">
     <h3 data-bind="text: question.Title"  style="border-bottom: 1px solid red" ></h3>
     
     <div>
         <div class="span1" style="display: inline-block;width: auto;margin-left: 0px;padding-right: 4px;">
-            <a href="#" id="up"><img  data-bind="attr: {src: voteViewModel.upVotePath}" style="height:30px;width:30px"/></a>
+            <a href="javascript:void(0)" id="up"><img  data-bind="attr: {src: voteViewModel.upVotePath}" style="height:30px;width:30px"/></a>
             <div data-bind="text: voteViewModel.currentVote()" style="font-size: large;text-align: center;"></div>
-            <a href="#" id="down"><img  data-bind="attr: {src: voteViewModel.downVotePath}" style="height:30px;width:30px"/></a>
+            <a href="javascript:void(0)" id="down"><img  data-bind="attr: {src: voteViewModel.downVotePath}" style="height:30px;width:30px"/></a>
         </div>
         <div data-bind="text: question.Description" class="container span6" style="height:auto;margin-right: 5px; display: inline-block;word-wrap: break-word;"></div>
     </div>
@@ -96,34 +162,43 @@
             Asked: <div data-bind="text: question.DateAsked" style="font-weight: bold; display: inline-block;"></div>
         </div>
     </div>
-    <div class="container span7"  style="width: inherit;border-bottom: 1px solid red;"></div>
+
+    <div class="container span9"  style="width: inherit;border-bottom: 1px solid red;"></div>
     
-    <div class="container span7" style="height: auto;margin-top: 10%;">
+    <div class="container span9" style="height: auto;margin-top: 10%;">
         <h3 style="text-decoration: underline;">Answers</h3>
 
-        <div class="container span7" style="height: auto;" data-bind="foreach: answers">
-            <div class="container span7" style="width: inherit;">
+        <div class="container span9" style="height: auto;" data-bind="foreach: answers">
             
-                <div data-bind="text: Answer.Body" style="height: auto;margin-top: 10px;word-wrap: break-word;background-color: palegoldenrod;"  ></div>
+            <div class="container span9" style="width: inherit;">
+              
+                <div>
+                    <div class="span1" style="display: inline-block;width: auto;margin-left: 0px;padding-right: 4px;">
+                        <a href="javascript:void(0)" class="voteanswerup" data-bind="attr:{'data-id': answer._id}"><img  data-bind="attr: {src: voteViewModel.upVotePath}" style="height:30px;width:30px"/></a>
+                        <div data-bind="text: voteViewModel.currentVote()" style="font-size: large;text-align: center;"></div>
+                        <a href="javascript:void(0)" class="voteanswerdown" data-bind="attr:{'data-id': answer._id}"><img  data-bind="attr: {src: voteViewModel.downVotePath}" style="height:30px;width:30px"/></a>
+                    </div>
 
+                    <div data-bind="text: answer.Body" class="container span8" style="background-color: gainsboro;height:auto;margin-right: 35px;padding-right: 10px; display: inline-block;word-wrap: break-word;"></div>
                  
-                <div  style="width: auto;background-color: lavender;padding: 5px;margin-top: 20px;float: right;">
-                    <img data-bind="attr: {src: gravatar,title: Answerer.UserName}" style="display: inline-block;height:20px;width:20px;" />
-                    <div data-bind="text: Answerer.UserName" style="display: inline-block;"></div>
-                    <div style="display: inline-block;">
-                        Answered: <div data-bind="text: Answer.DateAnswered" style="font-weight: bold; display: inline-block;"></div>
+                    <div  style="width: auto;background-color: lavender;padding: 5px;margin-top: 20px;float: right;margin-right: 35px;">
+                        <img data-bind="attr: {src: gravatar,title: answerer.UserName}" style="display: inline-block;height:20px;width:20px;" />
+                        <div data-bind="text: answerer.UserName" style="display: inline-block;"></div>
+                        <div style="display: inline-block;">
+                            Answered: <div data-bind="text: answer.DateAnswered" style="font-weight: bold; display: inline-block;"></div>
+                        </div>
                     </div>
                 </div>
             </div>
         
-            <div class="container span7" style="width: inherit;">
+            <div class="container span9" style="width: inherit;">
                 <hr/>
             </div>
         </div>
     </div>
 
 
-    <div id="signintoanswer" style="margin-top: 20px;padding: 10px;" class="container span7">
+    <div id="signintoanswer" style="margin-top: 20px;padding: 10px;" class="container span9">
         @{
             <div data-bind="visible: answers().length==0">No Answers Posted To This Question.. Be The First!</div>
             if(User.Identity.IsAuthenticated)

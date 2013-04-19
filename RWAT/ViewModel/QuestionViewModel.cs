@@ -10,10 +10,4 @@ namespace RWAT.ViewModel
         public User User { get; set; }
         public VoteViewModel VoteViewModel { get; set; }
     }
-
-    public class AnswerViewModel
-    {
-        public Answer Answer { get; set; }
-        public User Answerer { get; set; }
-    }
 }

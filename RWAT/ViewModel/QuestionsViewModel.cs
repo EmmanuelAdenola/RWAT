@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using RWAT.Models;
 
 namespace RWAT.ViewModel
 {

@@ -20,11 +20,7 @@ namespace RWAT.Controllers
              
             foreach (var question in MongoHelper.GetCollection<Question>("questions").FindAll().ToList())
             {
-                QuestionViewModel questionViewModel = new QuestionViewModel();
-                questionViewModel.Question = question;
-                User user =
-                    MongoHelper.GetCollection<User>("users").FindAll().FirstOrDefault(u => u.UserId == question.UserId);
-                questionViewModel.User = user;
+                QuestionViewModel questionViewModel = MongoHelper.GetQuestionViewModel(question,HttpContext.User.Identity.Name);
                 questions.Add(questionViewModel);
             }
 
@@ -37,8 +33,7 @@ namespace RWAT.Controllers
             var objectId = new ObjectId(id);
             var question =MongoHelper.GetCollection<Question>("questions").AsQueryable().FirstOrDefault(q => q.QuestionId == objectId);
 
-            QuestionViewModel questionViewModel = MongoHelper.GetQuestionViewModel(question,
-                                                                                 HttpContext.User.Identity.Name);
+            QuestionViewModel questionViewModel = MongoHelper.GetQuestionViewModel(question,HttpContext.User.Identity.Name);
             return View(questionViewModel);
         }
 
@@ -64,7 +59,7 @@ namespace RWAT.Controllers
                     question.UserId = user.UserId;
                     questions.Save(question);
                     var questionViewModel = MongoHelper.GetQuestionViewModel(question, HttpContext.User.Identity.Name);
-                    var jsonString = questionViewModel==null? "new {}" : questionViewModel.ToJson();
+                    var jsonString = questionViewModel==null? "{}" : questionViewModel.ToJson();
                     GlobalHost.ConnectionManager.GetHubContext<QuestionHub>().Clients.All.showQuestion(jsonString);
                     return RedirectToAction("Create");
                 }

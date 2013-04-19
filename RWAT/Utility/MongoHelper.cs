@@ -1,4 +1,5 @@
-﻿using System.Configuration;
+﻿using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using MongoDB.Driver;
 using MongoDB.Driver.Linq;
@@ -38,15 +39,24 @@ namespace RWAT.Utility
                                                           Question = question,
                                                           User = user,
                                                       };
-            questionViewModel.Answers =
-                GetCollection<Answer>("answers").AsQueryable().Select(a => new AnswerViewModel
-                                                                               {
-                                                                                   Answer = a,
-                                                                                   Answerer =
-                                                                                       userCollection.AsQueryable().
-                                                                                       First(
-                                                                                           u => u.UserId == a.UserId)
-                                                                               }).ToList();
+            questionViewModel.Answers = new List<AnswerViewModel>();
+            
+            foreach (var answer in GetCollection<Answer>("answers").AsQueryable().Where(a => a.QuestionId == question.QuestionId))
+            {
+                AnswerViewModel answerViewModel = new AnswerViewModel();
+                answerViewModel.VoteViewModel = new VoteViewModel();
+                answerViewModel.Answer = answer;
+                answerViewModel.Answerer = userCollection.AsQueryable().First(u => u.UserId == answer.UserId);
+                answerViewModel.VoteViewModel.CurrentVote = answer.Vote.UserVotes.Sum(u => u.Upvote);
+                    UserVote _userVote = answer.Vote.UserVotes.FirstOrDefault(uv => uv.User.UserName == sessionUserName);
+                    if (_userVote != null)
+                    {
+                        answerViewModel.VoteViewModel.SelectedUpVotePath = _userVote.SelectedUpVotePath;
+                        answerViewModel.VoteViewModel.SelectedDownVotePath = _userVote.SelectedDownVotePath;
+                    }
+                questionViewModel.Answers.Add(answerViewModel);
+            }
+
             questionViewModel.VoteViewModel = new VoteViewModel
                                                   {CurrentVote = question.Vote.UserVotes.Sum(s => s.Upvote)};
 

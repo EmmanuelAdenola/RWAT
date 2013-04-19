@@ -44,7 +44,8 @@ namespace RWAT.Controllers
                     GlobalHost.ConnectionManager.GetHubContext<AnswerHub>().Clients.All.showAnswer(new AnswerViewModel
                                                                                                        {
                                                                                                            Answer =newAnswer,
-                                                                                                           Answerer = user
+                                                                                                           Answerer = user,
+                                                                                                           VoteViewModel = new VoteViewModel()
                                                                                                        });
                     return RedirectToAction("AnswerBox", new { questionid = answerModel.QuestionId });
                 }

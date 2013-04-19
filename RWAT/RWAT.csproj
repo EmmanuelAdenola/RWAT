@@ -137,6 +137,7 @@
   <ItemGroup>
     <Compile Include="Controllers\AnswerController.cs" />
     <Compile Include="Hubs\AnswerHub.cs" />
+    <Compile Include="ViewModel\AnswerViewModel.cs" />
     <Compile Include="ViewModel\VoteViewModel.cs" />
     <Compile Include="ViewModel\QuestionsViewModel.cs" />
     <Compile Include="Models\Account.cs" />
