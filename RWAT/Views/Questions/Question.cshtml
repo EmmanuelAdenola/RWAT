@@ -20,39 +20,34 @@
         self.user = question["User"];
         self.voteViewModel =new VoteViewModel(question["VoteViewModel"]);
         self.gravatar = "http://www.gravatar.com/avatar/" + question["User"]["HashedEmail"] + "?d=identicon&f=y&s=50";
-        var answerArray = $.map(self.question["Answers"], function (answer) {
-            answer.gravatar = "http://www.gravatar.com/avatar/" + answer["User"]["HashedEmail"] + "?d=identicon&f=y&s=50";
+        var answerArray = $.map(question["Answers"], function (answer) {
+            answer.gravatar = "http://www.gravatar.com/avatar/" + answer["Answerer"]["HashedEmail"] + "?d=identicon&f=y&s=50";
             return answer;
         });
 
         self.answers = ko.observableArray(answerArray);
     }
     
-    function Answer(answer) {
-        var self = this;
-        self.answer = answer;
-    }
     
     $(function() {
         var initialQuestion = $.parseJSON('@Html.Raw(Model.ToJson())');
         var question = new Question(initialQuestion);
         var questionhub = $.connection.questionhub;
-        
-   
-        questionhub.client.showAnswer = function (answer) {
-            answer.gravatar = "http://www.gravatar.com/avatar/"+answer["User"]["HashedEmail"]+"?d=identicon&f=y&s=50";
+        var answerhub = $.connection.answerhub;
+
+        answerhub.client.showAnswer = function (answer) {
+            answer.gravatar = "http://www.gravatar.com/avatar/"+answer["Answerer"]["HashedEmail"]+"?d=identicon&f=y&s=50";
             question.answers.push(answer);
         };
 
-        questionhub.client.updateQuestionVote = function (voteviewModel) {
-            question.voteViewModel.currentVote(voteviewModel["CurrentVote"]);
-            if(voteviewModel["ErrorMessage"]!=null) {
-                alert(voteviewModel["ErrorMessage"]);
+        questionhub.client.updateQuestionVote = function (currentVote,errorMessage) {
+            question.voteViewModel.currentVote(currentVote);
+            if(errorMessage!=null && errorMessage!=undefined&& errorMessage!="") {
+                alert(errorMessage);
             }
         };
 
         questionhub.client.updateQuestionUpVoteImage = function (img) {
-
             question.voteViewModel.downVotePath(question.voteViewModel.voteViewModel.NoDownVotePath);
             question.voteViewModel.upVotePath(img);
         };
@@ -109,14 +104,14 @@
         <div class="container span7" style="height: auto;" data-bind="foreach: answers">
             <div class="container span7" style="width: inherit;">
             
-                <div data-bind="text: Body" style="height: auto;margin-top: 10px;word-wrap: break-word;background-color: palegoldenrod;"  ></div>
+                <div data-bind="text: Answer.Body" style="height: auto;margin-top: 10px;word-wrap: break-word;background-color: palegoldenrod;"  ></div>
 
                  
                 <div  style="width: auto;background-color: lavender;padding: 5px;margin-top: 20px;float: right;">
-                    <img data-bind="attr: {src: gravatar,title: User.UserName}" style="display: inline-block;height:20px;width:20px;" />
-                    <div data-bind="text: User.UserName" style="display: inline-block;"></div>
+                    <img data-bind="attr: {src: gravatar,title: Answerer.UserName}" style="display: inline-block;height:20px;width:20px;" />
+                    <div data-bind="text: Answerer.UserName" style="display: inline-block;"></div>
                     <div style="display: inline-block;">
-                        Answered: <div data-bind="text: DateAnswered" style="font-weight: bold; display: inline-block;"></div>
+                        Answered: <div data-bind="text: Answer.DateAnswered" style="font-weight: bold; display: inline-block;"></div>
                     </div>
                 </div>
             </div>
@@ -133,7 +128,7 @@
             <div data-bind="visible: answers().length==0">No Answers Posted To This Question.. Be The First!</div>
             if(User.Identity.IsAuthenticated)
             {
-                Html.RenderAction("AnswerBox", new {questionid = Model.Question.Id.ToString()});
+                Html.RenderAction("AnswerBox","Answer", new {questionid = Model.Question.QuestionId.ToString()});
             }
             else
             {

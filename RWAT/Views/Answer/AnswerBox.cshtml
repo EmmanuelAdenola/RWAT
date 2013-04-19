@@ -6,7 +6,7 @@
         height: 200px;
     }
 </style>     
-<div class="container span7" id="answerboxwrapper" style="margin-top: 20px;width: inherit;height: auto;" data-posturl="@Url.Action("Answer","Questions")">
+<div class="container span7" id="answerboxwrapper" style="margin-top: 20px;width: inherit;height: auto;" data-posturl="@Url.Action("NewAnswer","Answer")">
     <script type="text/javascript">
         $(function () {
             $("#submitanswer").submit(function () { return false; });
@@ -23,22 +23,23 @@
             });
         })
     </script>
+
     <div id="ajaxwriter" style="width: auto;">
         <fieldset>
             <legend> Your Answer: </legend>
-            @using(Html.BeginForm("Answer","Questions",null,FormMethod.Post, new Dictionary<string, object>{{"id","answer"}}))
+            @using(Html.BeginForm("NewAnswer","Answer",null,FormMethod.Post, new Dictionary<string, object>{{"id","answer"}}))
             {
-                @Html.HiddenFor(model=>model.QuestionId)
-                    @Html.TextAreaFor(model => model.Answer);
+                @Html.HiddenFor(model => model.QuestionId)
+                @Html.TextAreaFor(model => model.Answer)
                 <p>
                     <input type="button" class="btn" value="Submit" id="submitanswer"/>
                 </p>
-                    if (!ViewData.ModelState.IsValid)
-                    {
-                            <div class="success alert-error">
-                                @Html.ValidationSummary()
-                            </div>
-                    }
+                if (!ViewData.ModelState.IsValid)
+                {
+                    <div class="success alert-error">
+                        @Html.ValidationSummary()
+                    </div>
+                }
             }
         </fieldset>
     </div>

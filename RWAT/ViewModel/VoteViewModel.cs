@@ -30,10 +30,6 @@ namespace RWAT.ViewModel
         public string SelectedUpVotePath { get; set; }
 
         public string SelectedDownVotePath { get; set; }
-
-
-        public string ErrorMessage { get; set; }
-        public bool IsVoteUpdated { get; set; }
         public int CurrentVote { get; set; }
     }
 }

@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web.Hosting;
 using System.Web.Mvc;
 using Microsoft.AspNet.SignalR;
 using MongoDB.Bson;
-using MongoDB.Driver.Builders;
 using MongoDB.Driver.Linq;
 using RWAT.Hubs;
 using RWAT.Models;
@@ -20,14 +18,13 @@ namespace RWAT.Controllers
         {
              List<QuestionViewModel> questions = new List<QuestionViewModel>();
              
-            foreach (var question in MongoHelper.GetCollection<Question>("questions").FindAll())
+            foreach (var question in MongoHelper.GetCollection<Question>("questions").FindAll().ToList())
             {
                 QuestionViewModel questionViewModel = new QuestionViewModel();
                 questionViewModel.Question = question;
                 User user =
-                    MongoHelper.GetCollection<User>("users").FindOne(Query<User>.EQ(u => u.UserId, question.UserId));
+                    MongoHelper.GetCollection<User>("users").FindAll().FirstOrDefault(u => u.UserId == question.UserId);
                 questionViewModel.User = user;
-
                 questions.Add(questionViewModel);
             }
 
@@ -37,30 +34,12 @@ namespace RWAT.Controllers
         [HttpGet]
         public ActionResult Question(string id)
         {
-               ObjectId objectId = new ObjectId(id);
-            var question = MongoHelper.GetCollection<Question>("questions").AsQueryable().FirstOrDefault(q=>q.Id == objectId);
-            if(question != null)
-            {
-                User user =
-                    MongoHelper.GetCollection<User>("users").AsQueryable().FirstOrDefault(u=>u.UserId == question.UserId);
-                if (user != null)
-                {
-                    QuestionViewModel questionViewModel = new QuestionViewModel {Question = question, User = user};
-                    questionViewModel.VoteViewModel = new VoteViewModel
-                                                          {CurrentVote = question.Vote.UserVotes.Sum(s => s.Upvote)};
-                    string userName = HttpContext.User.Identity.Name;
+            var objectId = new ObjectId(id);
+            var question =MongoHelper.GetCollection<Question>("questions").AsQueryable().FirstOrDefault(q => q.QuestionId == objectId);
 
-                    var userVote = question.Vote.UserVotes.FirstOrDefault(uv => uv.User.UserName == userName);
-                    if (userVote != null)
-                    {
-                        questionViewModel.VoteViewModel.SelectedUpVotePath = userVote.SelectedUpVotePath;
-                        questionViewModel.VoteViewModel.SelectedDownVotePath = userVote.SelectedDownVotePath;
-                    }
-
-                    return View(questionViewModel);
-                }
-            }
-            return View();
+            QuestionViewModel questionViewModel = MongoHelper.GetQuestionViewModel(question,
+                                                                                 HttpContext.User.Identity.Name);
+            return View(questionViewModel);
         }
 
         [HttpGet]
@@ -81,13 +60,12 @@ namespace RWAT.Controllers
                 if (user != null)
                 {
                     var questions = MongoHelper.GetCollection<Question>("questions");
-
-                    user.Questions.Add(question);
                     question.DateAsked = DateTime.Now.ToShortDateString();
                     question.UserId = user.UserId;
                     questions.Save(question);
-                    QuestionViewModel questionModel = new QuestionViewModel {Question = question, User = user};
-                    GlobalHost.ConnectionManager.GetHubContext<QuestionHub>().Clients.All.showQuestion(questionModel);
+                    var questionViewModel = MongoHelper.GetQuestionViewModel(question, HttpContext.User.Identity.Name);
+                    var jsonString = questionViewModel==null? "new {}" : questionViewModel.ToJson();
+                    GlobalHost.ConnectionManager.GetHubContext<QuestionHub>().Clients.All.showQuestion(jsonString);
                     return RedirectToAction("Create");
                 }
                 ModelState.AddModelError("","Could not create question.");
@@ -96,40 +74,6 @@ namespace RWAT.Controllers
             return View(question);
         }
 
-        [HttpGet]
-        public ActionResult AnswerBox(string questionid)
-        {
-            return View(new AnswerModel{QuestionId =questionid});
-        }
-
-        [HttpPost]
-        [System.Web.Mvc.Authorize]
-        public ActionResult Answer(AnswerModel answerModel)
-        {
-            if (!ModelState.IsValid)
-            {
-                ModelState.AddModelError("", "Enter a valid answer.");
-                return View("AnswerBox",answerModel);
-            }
-            
-                var question = MongoHelper.GetCollection<Question>("questions").AsQueryable().FirstOrDefault(q=>q.Id == new ObjectId(answerModel.QuestionId));
-            if (question != null)
-            {
-                var user = MongoHelper.GetCollection<User>("users").AsQueryable().FirstOrDefault(u => u.UserName == HttpContext.User.Identity.Name);
-                if (user != null)
-                {
-                    Answer newAnswer = new Answer();
-                    newAnswer.Body = answerModel.Answer;
-                    newAnswer.User = user;
-                    newAnswer.DateAnswered = DateTime.Now.ToShortDateString();
-                    question.Answers.Add(newAnswer);
-                    MongoHelper.GetCollection<Question>("questions").Save(question);
-                    GlobalHost.ConnectionManager.GetHubContext<QuestionHub>().Clients.All.showAnswer(newAnswer);
-                    return RedirectToAction("AnswerBox", new {questionid = answerModel.QuestionId});
-                }
-            }
-            return View("AnswerBox",answerModel);
-        }
-
+       
     }
 }

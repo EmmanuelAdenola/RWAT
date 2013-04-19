@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
@@ -7,12 +6,11 @@ namespace RWAT.Models
 {
     public class Question
     {
-        private List<Answer> _answers;
         private Vote _vote;
 
         [BsonId]
         [BsonRepresentation(BsonType.String)]
-        public ObjectId Id { get; set; }
+        public ObjectId QuestionId { get; set; }
 
         [BsonRepresentation(BsonType.String)]
         public ObjectId UserId { get; set; }
@@ -30,26 +28,14 @@ namespace RWAT.Models
         {
             get
             {
-                if (_answers == null)
+                if (_vote == null)
                 {
-                    _vote =new Vote();
+                    _vote = new Vote();
                 }
                 return _vote;
             }
             set { _vote = value; }
         }
 
-        public List<Answer> Answers
-        {
-            get
-            {
-                if (_answers == null)
-                {
-                    _answers = new List<Answer>();
-                }
-                return _answers;
-            }
-            set { _answers = value; }
-        }
     }
 }
