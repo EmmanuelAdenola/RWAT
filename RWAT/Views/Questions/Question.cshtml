@@ -1,17 +1,24 @@
 ﻿@using MongoDB.Bson
-@model RWAT.Models.QuestionViewModel
+@model RWAT.ViewModel.QuestionViewModel
 
 @{
     Layout = "~/Views/Shared/Layout.cshtml";
 }
-
 <script type="text/javascript">
     
+    function VoteViewModel(voteModel) {
+        var self = this;
+        self.voteViewModel = voteModel;
+        self.upVotePath = ko.observable((voteModel["SelectedUpVotePath"] != null && voteModel["SelectedUpVotePath"] != undefined  && voteModel["SelectedUpVotePath"] != ""  ) ? voteModel["SelectedUpVotePath"] : voteModel["NoUpVotePath"]);
+        self.downVotePath = ko.observable((voteModel["SelectedDownVotePath"] != null && voteModel["SelectedDownVotePath"] != undefined && voteModel["SelectedDownVotePath"] != "") ? voteModel["SelectedDownVotePath"] : voteModel["NoDownVotePath"]);
+        self.currentVote = ko.observable(voteModel["CurrentVote"]);
+        self.imagepath = ko.observable(voteModel["ImagePath"]);
+    }
     function Question(question) {
         var self = this;
         self.question = question["Question"];
         self.user = question["User"];
-        
+        self.voteViewModel =new VoteViewModel(question["VoteViewModel"]);
         self.gravatar = "http://www.gravatar.com/avatar/" + question["User"]["HashedEmail"] + "?d=identicon&f=y&s=50";
         var answerArray = $.map(self.question["Answers"], function (answer) {
             answer.gravatar = "http://www.gravatar.com/avatar/" + answer["User"]["HashedEmail"] + "?d=identicon&f=y&s=50";
@@ -36,6 +43,37 @@
             answer.gravatar = "http://www.gravatar.com/avatar/"+answer["User"]["HashedEmail"]+"?d=identicon&f=y&s=50";
             question.answers.push(answer);
         };
+
+        questionhub.client.updateQuestionVote = function (voteviewModel) {
+            question.voteViewModel.currentVote(voteviewModel["CurrentVote"]);
+            if(voteviewModel["ErrorMessage"]!=null) {
+                alert(voteviewModel["ErrorMessage"]);
+            }
+        };
+
+        questionhub.client.updateQuestionUpVoteImage = function (img) {
+
+            question.voteViewModel.downVotePath(question.voteViewModel.voteViewModel.NoDownVotePath);
+            question.voteViewModel.upVotePath(img);
+        };
+        questionhub.client.updateQuestionDownVoteImage = function (img) {
+            question.voteViewModel.upVotePath(question.voteViewModel.voteViewModel.NoUpVotePath);
+            question.voteViewModel.downVotePath(img);  
+        };
+        
+        $("#up").click(function () {
+            var currVote = question.voteViewModel.currentVote() * 0;
+            question.voteViewModel.currentVote(currVote + 5);
+            question.voteViewModel.upVotePath( question.voteViewModel.voteViewModel["UpVotePath"]);
+            questionhub.server.upVote(question.question["_id"]);
+        });
+        
+        $("#down").click(function () {
+            var currVote = question.voteViewModel.currentVote() * 0;
+            question.voteViewModel.currentVote(currVote - 2);
+            question.voteViewModel.downVotePath(question.voteViewModel.voteViewModel["DownVotePath"]);
+            questionhub.server.downVote(question.question["_id"]);
+        });
         
         $.connection.hub.start();
         ko.applyBindings(question);
@@ -47,10 +85,17 @@
 <div class="container span7" style="margin-left:20%;margin-top: 5%;padding-bottom: 100px;">
     <h3 data-bind="text: question.Title"  style="border-bottom: 1px solid red" ></h3>
     
-    <div data-bind="text: question.Description" class="container span7" style="height:auto;"></div>
-    
+    <div>
+        <div class="span1" style="display: inline-block;width: auto;margin-left: 0px;padding-right: 4px;">
+            <a href="#" id="up"><img  data-bind="attr: {src: voteViewModel.upVotePath}" style="height:30px;width:30px"/></a>
+            <div data-bind="text: voteViewModel.currentVote()" style="font-size: large;text-align: center;"></div>
+            <a href="#" id="down"><img  data-bind="attr: {src: voteViewModel.downVotePath}" style="height:30px;width:30px"/></a>
+        </div>
+        <div data-bind="text: question.Description" class="container span6" style="height:auto;margin-right: 5px; display: inline-block;word-wrap: break-word;"></div>
+    </div>
+
     <div  style="width: auto;background-color: lavender;padding: 5px;margin-top: 20px;float: right;">
-        <img data-bind="attr: {src: gravatar,title: user.UserName}" style="display: inline-block;" />
+        <img data-bind="attr: {src: gravatar,title: user.UserName}" style="display: inline-block;height:20px;width:20px;" />
         <div data-bind="text: user.UserName" style="display: inline-block;"></div>
         <div style="display: inline-block;">
             Asked: <div data-bind="text: question.DateAsked" style="font-weight: bold; display: inline-block;"></div>
@@ -68,7 +113,7 @@
 
                  
                 <div  style="width: auto;background-color: lavender;padding: 5px;margin-top: 20px;float: right;">
-                    <img data-bind="attr: {src: gravatar,title: User.UserName}" style="display: inline-block;" />
+                    <img data-bind="attr: {src: gravatar,title: User.UserName}" style="display: inline-block;height:20px;width:20px;" />
                     <div data-bind="text: User.UserName" style="display: inline-block;"></div>
                     <div style="display: inline-block;">
                         Answered: <div data-bind="text: DateAnswered" style="font-weight: bold; display: inline-block;"></div>
@@ -85,6 +130,7 @@
 
     <div id="signintoanswer" style="margin-top: 20px;padding: 10px;" class="container span7">
         @{
+            <div data-bind="visible: answers().length==0">No Answers Posted To This Question.. Be The First!</div>
             if(User.Identity.IsAuthenticated)
             {
                 Html.RenderAction("AnswerBox", new {questionid = Model.Question.Id.ToString()});

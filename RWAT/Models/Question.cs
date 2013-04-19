@@ -8,6 +8,7 @@ namespace RWAT.Models
     public class Question
     {
         private List<Answer> _answers;
+        private Vote _vote;
 
         [BsonId]
         [BsonRepresentation(BsonType.String)]
@@ -22,9 +23,21 @@ namespace RWAT.Models
         [Required]
         public string Description { get; set; }
 
-        public int Vote { get; set; }
 
         public string DateAsked { get; set; }
+
+        public Vote Vote
+        {
+            get
+            {
+                if (_answers == null)
+                {
+                    _vote =new Vote();
+                }
+                return _vote;
+            }
+            set { _vote = value; }
+        }
 
         public List<Answer> Answers
         {

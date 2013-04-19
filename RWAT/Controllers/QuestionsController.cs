@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Web.Hosting;
 using System.Web.Mvc;
 using Microsoft.AspNet.SignalR;
 using MongoDB.Bson;
@@ -18,15 +19,16 @@ namespace RWAT.Controllers
         public ActionResult Index(bool? showNav=true)
         {
              List<QuestionViewModel> questions = new List<QuestionViewModel>();
-
+             
             foreach (var question in MongoHelper.GetCollection<Question>("questions").FindAll())
             {
-                QuestionViewModel questionModel = new QuestionViewModel();
-                questionModel.Question = question;
+                QuestionViewModel questionViewModel = new QuestionViewModel();
+                questionViewModel.Question = question;
                 User user =
                     MongoHelper.GetCollection<User>("users").FindOne(Query<User>.EQ(u => u.UserId, question.UserId));
-                questionModel.User = user;
-                questions.Add(questionModel);
+                questionViewModel.User = user;
+
+                questions.Add(questionViewModel);
             }
 
             return View(new QuestionsViewModel{QuestionViewModels =  questions,ShowNav = showNav});
@@ -41,8 +43,22 @@ namespace RWAT.Controllers
             {
                 User user =
                     MongoHelper.GetCollection<User>("users").AsQueryable().FirstOrDefault(u=>u.UserId == question.UserId);
-                QuestionViewModel questionViewModel = new QuestionViewModel { Question = question, User = user };
-                return View(questionViewModel);
+                if (user != null)
+                {
+                    QuestionViewModel questionViewModel = new QuestionViewModel {Question = question, User = user};
+                    questionViewModel.VoteViewModel = new VoteViewModel
+                                                          {CurrentVote = question.Vote.UserVotes.Sum(s => s.Upvote)};
+                    string userName = HttpContext.User.Identity.Name;
+
+                    var userVote = question.Vote.UserVotes.FirstOrDefault(uv => uv.User.UserName == userName);
+                    if (userVote != null)
+                    {
+                        questionViewModel.VoteViewModel.SelectedUpVotePath = userVote.SelectedUpVotePath;
+                        questionViewModel.VoteViewModel.SelectedDownVotePath = userVote.SelectedDownVotePath;
+                    }
+
+                    return View(questionViewModel);
+                }
             }
             return View();
         }
@@ -99,7 +115,7 @@ namespace RWAT.Controllers
                 var question = MongoHelper.GetCollection<Question>("questions").AsQueryable().FirstOrDefault(q=>q.Id == new ObjectId(answerModel.QuestionId));
             if (question != null)
             {
-                var user = MongoHelper.GetCollection<User>("users").AsQueryable().FirstOrDefault(u => u.UserId == question.UserId);
+                var user = MongoHelper.GetCollection<User>("users").AsQueryable().FirstOrDefault(u => u.UserName == HttpContext.User.Identity.Name);
                 if (user != null)
                 {
                     Answer newAnswer = new Answer();
@@ -114,5 +130,6 @@ namespace RWAT.Controllers
             }
             return View("AnswerBox",answerModel);
         }
+
     }
 }

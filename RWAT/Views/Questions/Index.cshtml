@@ -46,6 +46,9 @@
     <h3>All Questions</h3>
     <hr/>
 </div>
+<div data-bind="visible: questions().length == 0" style="height: auto;margin-top: 3%;margin-left: 20%;" class="container span7">
+    No Questions Asked
+</div>
 <div data-bind="foreach: questions" style="height: auto;margin-top: 3%;margin-left: 20%;" class="container span7">
     <div style="background-color:lavender;margin-top: 10px;width:inherit;height:auto;">
         <a data-bind="attr:{href: Link , title: question.Title}, text: question.Title"></a> -
