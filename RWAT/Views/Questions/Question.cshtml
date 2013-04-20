@@ -143,49 +143,60 @@
 
 </script>
 
-<div class="container span9" style="margin-left:20%;margin-top: 5%;padding-bottom: 100px;">
-    <h3 data-bind="text: question.Title"  style="border-bottom: 1px solid red" ></h3>
+<div class="container span9" id="questioncontainer">
+    <h3 data-bind="text: question.Title"  id="questiontitle" ></h3>
     
     <div>
-        <div class="span1" style="display: inline-block;width: auto;margin-left: 0px;padding-right: 4px;">
-            <a href="javascript:void(0)" id="up"><img  data-bind="attr: {src: voteViewModel.upVotePath}" style="height:30px;width:30px"/></a>
-            <div data-bind="text: voteViewModel.currentVote()" style="font-size: large;text-align: center;"></div>
-            <a href="javascript:void(0)" id="down"><img  data-bind="attr: {src: voteViewModel.downVotePath}" style="height:30px;width:30px"/></a>
+        <div class="span1 votewrapper">
+            <a href="javascript:void(0)" id="up">
+                <img  data-bind="attr: {src: voteViewModel.upVotePath}" class="voteimages"/>
+            </a>
+            <div data-bind="text: voteViewModel.currentVote()" class="currentvote"></div>
+            <a href="javascript:void(0)" id="down">
+                <img  data-bind="attr: {src: voteViewModel.downVotePath}" class="voteimages"/>
+            </a>
         </div>
-        <div data-bind="text: question.Description" class="container span6" style="height:auto;margin-right: 5px; display: inline-block;word-wrap: break-word;"></div>
+        <div data-bind="text: question.Description" class="container span6" id="questiondescription"></div>
     </div>
 
-    <div  style="width: auto;background-color: lavender;padding: 5px;margin-top: 20px;float: right;">
-        <img data-bind="attr: {src: gravatar,title: user.UserName}" style="display: inline-block;height:20px;width:20px;" />
-        <div data-bind="text: user.UserName" style="display: inline-block;"></div>
-        <div style="display: inline-block;">
-            Asked: <div data-bind="text: question.DateAsked" style="font-weight: bold; display: inline-block;"></div>
+    <div  class="questionanswerpanel">
+        <img data-bind="attr: {src: gravatar,title: user.UserName}"/>
+        <div data-bind="text: user.UserName" class="username"></div>
+
+        <div style="display: inline-block;" class="datetimewrapper">
+            Asked: <div data-bind="text: question.DateAsked" class="datetime"></div>
         </div>
     </div>
 
-    <div class="container span9"  style="width: inherit;border-bottom: 1px solid red;"></div>
+    <div class="container span9"  id="divider"></div>
     
-    <div class="container span9" style="height: auto;margin-top: 10%;">
-        <h3 style="text-decoration: underline;">Answers</h3>
-
+    <div id="answerscontainer" class="container span9">
+        <h3 id="answersheading">Answers</h3>
+        <hr/>
         <div class="container span9" style="height: auto;" data-bind="foreach: answers">
             
-            <div class="container span9" style="width: inherit;">
-              
+            <div class="container span9 answerpanel">
                 <div>
-                    <div class="span1" style="display: inline-block;width: auto;margin-left: 0px;padding-right: 4px;">
-                        <a href="javascript:void(0)" class="voteanswerup" data-bind="attr:{'data-id': answer._id}"><img  data-bind="attr: {src: voteViewModel.upVotePath}" style="height:30px;width:30px"/></a>
-                        <div data-bind="text: voteViewModel.currentVote()" style="font-size: large;text-align: center;"></div>
-                        <a href="javascript:void(0)" class="voteanswerdown" data-bind="attr:{'data-id': answer._id}"><img  data-bind="attr: {src: voteViewModel.downVotePath}" style="height:30px;width:30px"/></a>
+                    
+                    <div class="span1 votewrapper">
+                        <a href="javascript:void(0)" class="voteanswerup" data-bind="attr:{'data-id': answer._id}">
+                            <img  data-bind="attr: {src: voteViewModel.upVotePath}" class="voteimages"/>
+                        </a>
+                        
+                        <div data-bind="text: voteViewModel.currentVote()" class="currentvote"></div>
+                        
+                        <a href="javascript:void(0)" class="voteanswerdown" data-bind="attr:{'data-id': answer._id}">
+                            <img  data-bind="attr: {src: voteViewModel.downVotePath}" class="voteimages"/>
+                        </a>
                     </div>
 
-                    <div data-bind="text: answer.Body" class="container span8" style="background-color: gainsboro;height:auto;margin-right: 35px;padding-right: 10px; display: inline-block;word-wrap: break-word;"></div>
+                    <div data-bind="text: answer.Body" class="container span8 answerbody"></div>
                  
-                    <div  style="width: auto;background-color: lavender;padding: 5px;margin-top: 20px;float: right;margin-right: 35px;">
-                        <img data-bind="attr: {src: gravatar,title: answerer.UserName}" style="display: inline-block;height:20px;width:20px;" />
-                        <div data-bind="text: answerer.UserName" style="display: inline-block;"></div>
-                        <div style="display: inline-block;">
-                            Answered: <div data-bind="text: answer.DateAnswered" style="font-weight: bold; display: inline-block;"></div>
+                    <div  class="questionanswerpanel">
+                        <img data-bind="attr: {src: gravatar,title: answerer.UserName}" />
+                        <div data-bind="text: answerer.UserName" class="username"></div>
+                        <div class="datetimewrapper">
+                            Answered: <div data-bind="text: answer.DateAnswered" class="datetimewrapper"></div>
                         </div>
                     </div>
                 </div>

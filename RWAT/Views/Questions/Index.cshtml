@@ -52,21 +52,20 @@
     <hr/>
 </div>
 
-<div data-bind="visible: questions().length == 0" style="height: auto;margin-top: 3%;margin-left: 20%;" class="container span7">
+<div data-bind="visible: questions().length == 0" id="noquestionsavailablemsg" class="container span7">
     No Questions Has Been Asked Yet
 </div>
 
-<div data-bind="foreach: questions" style="height: auto;margin-left: 20%;padding-bottom: 100px;" class="container span7">
-    
-    <div  class="container" style="background-color:lavender;margin-top: 10px;width:inherit;height:auto;">
-            <div class="span5" style="height:60px;width: auto;background-color: sandybrown;margin-left: 10px;">
-                <h3 data-bind="{text: answers.length}" style="margin-top:0px;text-align: center;color:white;background-color:red;"></h3>
-                <div style="display: inline-block;margin-top: -10px;">answers</div>
+<div data-bind="foreach: questions" id="questions" class="container span7">
+    <div class="eachquestion container roundedcorners">
+            <div class="span5 numberanswerbox">
+                <h3 data-bind="{text: answers.length}" class="numberofanswers"></h3>
+                <div class="numberofanswerstext">answers</div>
             </div>
         
-            <div class="span5" style="height:60px;width: auto;background-color: sandybrown;margin-left: 10px;">
-                <h3 data-bind="{text: question.Vote.UserVotes.length}" style="margin-top:0px;text-align: center;color:white;background-color:red;"></h3>
-                <div style="display: inline-block;margin-top: -10px;">votes</div>
+            <div class="span5 numberanswerbox">
+                <h3 data-bind="{text: question.Vote.UserVotes.length}" class="numberofanswers"></h3>
+                <div class="numberofanswerstext">votes</div>
             </div>
             
             <div  class="span5" style="margin-left: 50px; width: auto;">

@@ -1,12 +1,7 @@
 ﻿@model RWAT.Models.AnswerModel  
-@{Layout = null;}    
-<style>
-    #Answer {
-        width: 400px;
-        height: 200px;
-    }
-</style>     
-<div class="container span7" id="answerboxwrapper" style="margin-top: 20px;width: inherit;height: auto;" data-posturl="@Url.Action("NewAnswer","Answer")">
+@{Layout = null;} 
+   
+<div class="container span7" id="answerboxwrapper" data-posturl="@Url.Action("NewAnswer","Answer")">
     <script type="text/javascript">
         $(function () {
             $("#submitanswer").submit(function () { return false; });
@@ -17,14 +12,14 @@
                     url: $("#answerboxwrapper").attr('data-posturl'),
                     data:  $("#answer").serialize(),
                     success:function (data) {
-                        $("#ajaxwriter").html(data);
+                        $("#fieldsetwrapper").html(data);
                     }
                 });
             });
         })
     </script>
 
-    <div id="ajaxwriter" style="width: auto;">
+    <div id="fieldsetwrapper">
         <fieldset>
             <legend> Your Answer: </legend>
             @using(Html.BeginForm("NewAnswer","Answer",null,FormMethod.Post, new Dictionary<string, object>{{"id","answer"}}))

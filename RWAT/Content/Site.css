@@ -1,10 +1,160 @@
-﻿/*----------------------------------------------------------
-The base color for this template is #5c87b2. If you'd like
+﻿/*MY OWN CSS*/
+
+.links {
+    display: inline-block;
+    padding: 5px;
+    background-color: lavender;
+}
+
+#headerwrapper {
+    margin-top: 5px;
+}
+
+#noquestionsavailablemsg {
+    height: auto;
+    margin-top: 3%;
+    margin-left: 20%;
+}
+
+#questions {
+    height: auto;margin-left: 20%;padding-bottom: 100px;
+}
+
+.eachquestion {
+    background-color: lavender;
+    margin-top: 10px;
+    width: inherit;
+    height: auto;
+}
+
+.numberanswerbox {
+    height: 60px;
+    width: auto;
+    background-color: sandybrown;
+    margin-left: 10px;
+}
+
+.numberofanswers {
+    margin-top: 0px;
+    text-align: center;
+    color: black;
+    background-color: cornsilk;
+}
+
+.numberofanswerstext {
+  display: inline-block;margin-top: -10px;  
+}
+
+
+#Answer {
+    width: 400px;
+    height: 200px;
+}
+
+#answerboxwrapper {
+    margin-top: 20px;width: inherit;height: auto;
+}
+
+#fieldsetwrapper {
+    width: auto;
+}
+
+#homewelcomemsg {
+    margin-top: 2%;
+}
+    
+#askquestionwrapper {
+    margin-left: 20%;margin-top: 10px;
+}
+
+/* .roundedcorners was gotten from: http://jonraasch.com/blog/css-rounded-corners-in-all-browsers            */
+    .roundedcorners {
+    padding: 5px;
+    -moz-border-radius: 15px;
+    -webkit-border-radius: 15px;
+    -khtml-border-radius: 215px;
+    border-radius: 15px;
+}
+
+
+#questioncontainer {
+    margin-left:20%;margin-top: 5%;padding-bottom: 100px;
+}
+
+#questiontitle {
+    border-bottom: 1px solid lavender;
+}
+
+.votewrapper {
+    display: inline-block;
+    width: auto;
+    margin-left: 0px;
+    padding-right: 4px;
+}
+
+.currentvote {
+    font-size: large;
+    text-align: center;
+
+}
+
+#questiondescription {
+    height:auto;margin-right: 5px; display: inline-block;word-wrap: break-word;
+}
+
+.questionanswerpanel{
+    width: auto;background-color: lavender;padding: 5px;margin-top: 20px;float: right;
+}
+
+.questionanswerpanel img {
+    display: inline-block;height:20px;width: 20px;
+}
+
+.questionanswerpanel .username {
+    display: inline-block;
+}
+
+.questionanswerpanel .datetimewrapper{
+    display: inline-block;
+}
+
+.questionanswerpanel .datetimewrapper .datetime{
+    font-weight: bold; display: inline-block;
+}
+
+#divider {
+    width: inherit;border-bottom: 1px solid lavender;margin-top: 5px;
+}
+
+#answerscontainer{
+    height: auto;margin-top: 10%;
+}
+
+#answersheading {
+}
+
+.answerpanel {
+    width: inherit;
+}
+
+.answerbody {
+    height:auto;margin-right: 35px;padding-right: 10px; display: inline-block;word-wrap: break-word;
+}
+
+.voteimages {
+    height:30px;width:30px
+}
+
+
+
+
+/*----------------------------------------------------------
+DEFAULT CSS The base color for this template is #5c87b2. If you'd like
 to use a different color start by replacing all instances of
 #5c87b2 with your new color.
 ----------------------------------------------------------*/
 body {
-    background-color: #5c87b2;
+    background-color: white;
     font-size: .85em;
     font-family: "Trebuchet MS", Verdana, Helvetica, Sans-Serif;
     margin: 0;
@@ -22,7 +172,7 @@ a:visited {
 }
 
 a:hover {
-    color: #1d60ff;
+    color: black;
     text-decoration: none;
 }
 
@@ -322,3 +472,4 @@ div#title {
 .tri-state {
     width: 6em;
 }
+

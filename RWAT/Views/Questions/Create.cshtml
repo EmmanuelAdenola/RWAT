@@ -16,7 +16,7 @@
 
 
     $(function() {
-        var maxWordCount = 300;
+        var maxWordCount = 500;
         var wordCountViewModel = new WordCountViewModel(maxWordCount);
 
         $(document).on("keyup", "#Description", function() {
@@ -33,7 +33,7 @@
     });
 </script>
 
-<div id="askquestionwrapper" class="container span4" style="margin-left: 20%;margin-top: 10px;">
+<div id="askquestionwrapper" class="container span4">
     @using (Html.BeginForm())
     {
         <fieldset>

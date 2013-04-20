@@ -270,7 +270,6 @@
     <Content Include="Views\Questions\Create.cshtml" />
     <Content Include="Views\Shared\Layout.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
-    <Content Include="Views\Navigation\AuthenticatedNav.cshtml" />
     <Content Include="Views\Questions\Question.cshtml" />
     <Content Include="Views\Answer\AnswerBox.cshtml" />
     <Content Include="Views\Account.cshtml" />

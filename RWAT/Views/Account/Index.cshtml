@@ -24,8 +24,6 @@
         });
         
         $(document).on("click", "#login", function () {
-
-
             $.ajax({
                 type: "POST",
                 url: $(this).attr('data-url'),
@@ -43,15 +41,28 @@
         });
     });
 </script>
+<style>
+    #registerwrapper {
+        width: auto;
+        background-color: lavender;
+        padding: 5px;
+    }
 
-<div class="container span5" style="margin-left: 10%;margin-top: 10px;">
-    <div id="registerwrapper" class="span5" style="background-color:lavender;padding: 5px;">
+    #loginwrapper {
+        width: auto;background-color:lavender;margin-top: 10px;padding: 5px;
+    }
+</style>
+<div class="container span5" style="margin-left: 10%;margin-top: 100px;width: auto;">
+    <div id="registerwrapper" class="span5 roundedcorners">
         @{
             Html.RenderAction("Register");
         }
     </div>
 
-    <div id="loginwrapper" class="span5" style="background-color:lavender;margin-top: 10px;padding: 5px;">
+    <div class="span5">
+    </div>
+
+    <div id="loginwrapper" class="span5 roundedcorners">
         @{
             Html.RenderAction("Login");
         }
