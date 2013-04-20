@@ -10,27 +10,48 @@ using RWAT.ViewModel;
 
 namespace RWAT.Hubs
 {
+    /// <summary>
+    /// Class for bidirectional communication between clients.
+    /// </summary>
     [HubName("questionhub")]
     public class QuestionHub : Hub
     {
         private const int QuestionUpvote = 5, QuestionDownVote = -2;
 
-        public void ShowQuestion(QuestionViewModel questionModel)
+        /// <summary>
+        /// Shows a new question in the client
+        /// </summary>
+        /// <param name="questionViewModel"></param>
+        public void ShowQuestion(QuestionViewModel questionViewModel)
         {
-            Clients.Caller.showQuestion(questionModel);
+            Clients.Caller.showQuestion(questionViewModel);
         }
 
-       
+       /// <summary>
+       /// Update downvote action
+       /// </summary>
+       /// <param name="questionid"></param>
         public void DownVote(string questionid)
         {
             UpdateVote(questionid, false);
         }
 
+        /// <summary>
+        /// Update Upvote action
+        /// </summary>
+        /// <param name="questionid"></param>
         public void UpVote(string questionid)
         {
             UpdateVote(questionid, true);
         }
 
+
+        /// <summary>
+        /// Contains logic to prevent a user is voting him or herself, otherwise apply votes and show proper image.
+        /// </summary>
+        /// <param name="questionid"></param>
+        /// <param name="isUpVote"></param>
+       
         private void UpdateVote(string questionid, bool isUpVote)
         {
             var question = MongoHelper.GetCollection<Question>("questions").AsQueryable().FirstOrDefault(q => q.QuestionId == new ObjectId(questionid));
@@ -83,8 +104,15 @@ namespace RWAT.Hubs
             }
         }
 
-
-        public void ReestablishUserVoteChanges(Question question, VoteViewModel voteviewModel, UserVote userVote,
+        
+        /// <summary>
+        /// User is making a change to an existing vote
+        /// </summary>
+        /// <param name="question"></param>
+        /// <param name="voteviewModel"></param>
+        /// <param name="userVote"></param>
+        /// <param name="isUpVote"></param>
+        private void ReestablishUserVoteChanges(Question question, VoteViewModel voteviewModel, UserVote userVote,
                                                bool isUpVote)
         {
             if (isUpVote)
@@ -122,7 +150,14 @@ namespace RWAT.Hubs
             }
         }
 
-        public void NewQuestionVoteByUser(Question question, VoteViewModel voteviewModel, bool isUpVote)
+        /// <summary>
+        /// Check if a user is making a new vote
+        /// </summary>
+        /// <param name="question"></param>
+        /// <param name="voteviewModel"></param>
+        /// <param name="isUpVote"></param>
+      
+        private void NewQuestionVoteByUser(Question question, VoteViewModel voteviewModel, bool isUpVote)
         {
             UserVote userVote = new UserVote();
             userVote.User =

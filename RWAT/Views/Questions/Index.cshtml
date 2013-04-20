@@ -5,46 +5,14 @@
     if(Model.ShowNav == true)
     {
         Layout = "~/Views/Shared/Layout.cshtml";
-      
     }
 }
+<script src="../../Scripts/rwat/Questions.js"></script>
 
 <script type="text/javascript">
-    function QuestionWrapper(questionWrapper) {
-        var self = this;
-        self.question = questionWrapper["Question"];
-        self.answers = questionWrapper["Answers"];
-        self.user = questionWrapper["User"];
-        console.log(self.question);
-        self.Link = "/Questions/Question?id="+self.question["_id"];
-    }
-
-    function QuestionsViewModel(initValue) {
-        var self = this;
-        self.questions = ko.observableArray(initValue);
-    }
-  
-    
-    $(function () {
-        var questionhub = $.connection.questionhub;
-        
-        var questionsArray = $.map(@Html.Raw(Model.QuestionViewModels.ToJson()), function (questionWrapper) {
-            return new QuestionWrapper(questionWrapper);
-        });
-        
-        var questionsViewModel = new QuestionsViewModel(questionsArray);
-        ko.applyBindings(questionsViewModel);
-
-
-        questionhub.client.showQuestion = function (questionWrapper) {
-            console.log(questionWrapper);
-            var qw = $.parseJSON(questionWrapper);
-            questionsViewModel.questions.push(new QuestionWrapper(qw));
-        };
-
-        $.connection.hub.start();
-
-    });
+   $(function() {
+       initQuestionsHub(@Html.Raw(Model.QuestionViewModels.ToJson()));
+   })
 </script>
 
 <div class="container">

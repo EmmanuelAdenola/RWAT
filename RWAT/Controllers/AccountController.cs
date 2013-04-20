@@ -1,10 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Configuration;
-using System.Linq;
+﻿using System.Linq;
 using System.Web.Mvc;
 using System.Web.Security;
 using MongoDB.Driver.Linq;
-using MongoDB.Driver;
 using RWAT.Models;
 using RWAT.Utility;
 
@@ -12,6 +9,7 @@ namespace RWAT.Controllers
 {
     public class AccountController : Controller
     {
+
         public ActionResult Index()
         {
             if(User.Identity.IsAuthenticated)
@@ -27,6 +25,7 @@ namespace RWAT.Controllers
         {
             return View();
         }
+
         [HttpGet]
         [ChildActionOnly]
         public ActionResult Register()
@@ -41,25 +40,23 @@ namespace RWAT.Controllers
             {
                 return View(loginModel);
             }
-            var conn =
-               new MongoConnectionStringBuilder(
-                   ConfigurationManager.ConnectionStrings["MongoDB"].ConnectionString);
-
-            MongoClient mongoClient = new MongoClient(conn.ConnectionString);
-            MongoServer mongoServer = mongoClient.GetServer();
-            MongoDatabase mongoDatabase = mongoServer.GetDatabase(conn.DatabaseName);
-
-            var isdetailsvalid = mongoDatabase.GetCollection<Account>("accounts").AsQueryable().Any(a=>a.UserName == loginModel.UserName);
+          
+            //check if user exists
+            var isdetailsvalid = MongoHelper.GetCollection<Account>("accounts").AsQueryable().Any(a=>a.UserName == loginModel.UserName);
             
             if(!isdetailsvalid)
             {
                 ModelState.AddModelError("","Invalid details");
                 return View(loginModel);
             }
+            //set cookie
             FormsAuthentication.SetAuthCookie(loginModel.UserName,true);
+            
+            //send redirect url to client
             return new JsonResult { Data = new { success = "Home/Index" }, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
 
         }
+
 
         [HttpPost]
         public ActionResult Register(RegisterModel  registerModel)
@@ -68,24 +65,26 @@ namespace RWAT.Controllers
             {
                 return View("Register", registerModel);
             }
-
-            var conn =
-                 new MongoConnectionStringBuilder(
-                     ConfigurationManager.ConnectionStrings["MongoDB"].ConnectionString);
-
-            MongoClient mongoClient = new MongoClient(conn.ConnectionString);
-            MongoServer mongoServer = mongoClient.GetServer();
-            MongoDatabase mongoDatabase = mongoServer.GetDatabase(conn.DatabaseName);
-            bool userNameInuse = mongoDatabase.GetCollection("accounts").AsQueryable<Account>().Any(a=>a.UserName == registerModel.UserName);
+            //check if user name is in use
+            var accounts = MongoHelper.GetCollection<Account>("accounts");
+            bool userNameInuse = accounts.AsQueryable().Any(a=>a.UserName == registerModel.UserName);
             
             if (!userNameInuse)
             {
+                //create new user
                 User user = new User { UserName = registerModel.UserName ,HashedEmail =HashHelper.GetHash(registerModel.Email)};
-                Account account = new Account { Password = HashHelper.GetHash(registerModel.Password), 
-                    UserName = registerModel.UserName,Email = registerModel.Email};
-                mongoDatabase.GetCollection<User>("users").Save(user);
+             
+                //create new accout 
+                Account account = new Account
+                {
+                    Password = HashHelper.GetHash(registerModel.Password),
+                    UserName = registerModel.UserName,
+                    Email = registerModel.Email
+                };
+               
+                MongoHelper.GetCollection<User>("users").Save(user);
 
-                var result = mongoDatabase.GetCollection<Account>("accounts").Save(account);
+                var result = accounts.Save(account);
 
                 if (result.Ok)
                 {
@@ -113,26 +112,5 @@ namespace RWAT.Controllers
             FormsAuthentication.SignOut();
             return RedirectToAction("Index", "Home");
         }
-    }
-
-    public class RegisterModel
-    {
-        [Required]
-        public string UserName { get; set; }
-
-        [Required]
-        public string Password { get; set; }
-
-        [Required]
-        public string Email { get; set; }
-    }
-
-    public class LoginModel  
-    {
-        [Required]
-        public string UserName { get; set; }
-
-        [Required]
-        public string Password { get; set; }
     }
 }

@@ -6,6 +6,7 @@
     background-color: lavender;
 }
 
+
 #headerwrapper {
     margin-top: 5px;
 }
@@ -146,7 +147,10 @@
 }
 
 
-
+.createquestiondescription {
+    width: 200px;
+    height: 200px;
+}
 
 /*----------------------------------------------------------
 DEFAULT CSS The base color for this template is #5c87b2. If you'd like
@@ -347,6 +351,7 @@ input[type="password"] {
     font-size: 1.2em;
     color: #444;
     width: 200px;
+    height: 30px;
 }
 
 select {

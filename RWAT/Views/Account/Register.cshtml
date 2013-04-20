@@ -1,4 +1,4 @@
-﻿@model RWAT.Controllers.RegisterModel 
+﻿@model RWAT.Models.RegisterModel 
 
 @{
     Layout = "";
@@ -19,9 +19,14 @@
             @Html.EditorFor(model=>model.Email)
         </p>
         
-         <p>
+        <p>
             @Html.LabelFor(model=>model.Password)
             @Html.PasswordFor(model=>model.Password)
+        </p>
+        
+          <p>
+            @Html.LabelFor(model=>model.ConfirmPassword)
+            @Html.PasswordFor(model=>model.ConfirmPassword)
         </p>
         <input type="submit" value="Register" id="register" class="btn" data-url="@Url.Action("Register","Account")"/>
     }

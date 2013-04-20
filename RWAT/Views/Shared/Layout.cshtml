@@ -2,43 +2,39 @@
 <html>
     <head>
         <link href="../../Content/bootstrap.css" rel="stylesheet" />
+        <link href="../../Content/Site.css" rel="stylesheet" />
         <script src="../../Scripts/jquery-1.9.1.js"></script>
         <script src="../../Scripts/jquery-ui-1.8.20.js"></script>
         <script src="../../Scripts/jquery.signalR-1.0.1.js"></script>
         <script src="@Url.Content("/signalr/hubs")"></script>
         <script src="@Url.Content("~/Scripts/knockout-2.2.1.js")"></script>  
-        
-        <style>
-            .links {
-                display: inline-block;padding: 5px;background-color: lavender;
-            }
-        </style>
     </head>
+
     <body>
-        <div class="container">
+        <div class="container" id="headerwrapper">
             <a href="@Url.Action("Index","Home")" style="border-color: red;padding-right:10px;font-style: italic;">RWAT Virtual Lab</a>
           
-            <div class="links">
+            <div class="links roundedcorners">
                 @Html.ActionLink("Home","Index","Home")
             </div>
 
-            <div class="links">
+            <div class="links roundedcorners">
                 @Html.ActionLink("Questions","Index","Questions")
             </div>
 
-            <div class="links">
+            <div class="links roundedcorners">
                 @Html.ActionLink("Ask Question","Create","Questions")
             </div>
             
             @if(!User.Identity.IsAuthenticated)
             {
-                <div class="links">
+                <div class="links roundedcorners">
                     @Html.ActionLink("Sign in","Index","Account")
                 </div>
             }
             else
             {
-                <div class="links">
+                <div class="links roundedcorners">
                     @Html.ActionLink("Sign out","SignOut","Account")
                 </div>
                 <h4><i>Logged in as @HttpContext.Current.User.Identity.Name</i></h4>
