@@ -247,6 +247,7 @@
     <Content Include="Scripts\knockout-2.2.1.debug.js" />
     <Content Include="Scripts\knockout-2.2.1.js" />
     <Content Include="Scripts\modernizr-2.5.3.js" />
+    <Content Include="Scripts\rwat\Account.js" />
     <Content Include="Scripts\rwat\CreateQuestion.js" />
     <Content Include="Scripts\rwat\Question.js" />
     <Content Include="Scripts\rwat\Questions.js" />

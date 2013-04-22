@@ -19,7 +19,7 @@
                 @Html.LabelFor(model => model.Password)
                 @Html.PasswordFor(model => model.Password)
             </p>
-            <input type="submit" value="Login" id="login" class="btn" data-url="@Url.Action("Login", "Account")"/>
+            <input type="submit" value="Login" id="login" class="btn" data-redirecturl="@Url.Action("Index","Home")" data-url="@Url.Action("Login", "Account")"/>
              
              if (!ViewData.ModelState.IsValid)
              {

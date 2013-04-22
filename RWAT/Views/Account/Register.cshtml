@@ -28,7 +28,7 @@
             @Html.LabelFor(model=>model.ConfirmPassword)
             @Html.PasswordFor(model=>model.ConfirmPassword)
         </p>
-        <input type="submit" value="Register" id="register" class="btn" data-url="@Url.Action("Register","Account")"/>
+        <input type="submit" value="Register" id="register" class="btn" data-redirecturl="@Url.Action("Index","Home")"  data-url="@Url.Action("Register","Account")"/>
     }
     
     @if(!ViewData.ModelState.IsValid)

@@ -1,65 +1,17 @@
 ﻿@{
     Layout = "~/Views/Shared/Layout.cshtml";
 }
-<script type="text/javascript">
-    $(function() {
-        $(document).on("submit","#registerform",function() { return false; });
-        $(document).on("submit", "#loginform", function () { return false; });
 
-        $(document).on("click","#register",function () {
-            $.ajax({
-                type: "POST",
-                url: $(this).attr('data-url'),
-                data: $("#registerform").serialize(),
-                success: function (data) {
-                    if(data["success"]!==undefined) {
-                        window.location = data["success"];
-                    }
-                    else {
-                        $("#registerwrapper").html(data);
-                    }
-                }
-            });
-                
-        });
-        
-        $(document).on("click", "#login", function () {
-            $.ajax({
-                type: "POST",
-                url: $(this).attr('data-url'),
-                data: $("#loginform").serialize(),
-                success: function (data) {
-                    if (data["success"] !== undefined) {
-                        window.location = data["success"];
-                    }
-                    else {
-                        $("#loginwrapper").html(data);
-                    }
-                }
-            });
+<script src="@Url.Content("~/Scripts/rwat/Account.js")"></script>
 
-        });
-    });
-</script>
-<style>
-    #registerwrapper {
-        width: auto;
-        background-color: lavender;
-        padding: 5px;
-    }
-
-    #loginwrapper {
-        width: auto;background-color:lavender;margin-top: 10px;padding: 5px;
-    }
-</style>
-<div class="container span5" style="margin-left: 10%;margin-top: 100px;width: auto;">
+<div class="container span5" style="margin-left: 14%;margin-top: 50px;width: auto;">
     <div id="registerwrapper" class="span5 roundedcorners">
         @{
             Html.RenderAction("Register");
         }
     </div>
 
-    <div class="span5">
+    <div class="span4">
     </div>
 
     <div id="loginwrapper" class="span5 roundedcorners">

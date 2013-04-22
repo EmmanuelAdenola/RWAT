@@ -53,7 +53,7 @@ namespace RWAT.Controllers
             FormsAuthentication.SetAuthCookie(loginModel.UserName,true);
             
             //send redirect url to client
-            return new JsonResult { Data = new { success = "Home/Index" }, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
+            return new JsonResult { Data = new { success = true }, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
 
         }
 
@@ -102,7 +102,7 @@ namespace RWAT.Controllers
                 return View(registerModel);
             }
 
-            return new JsonResult{Data = new {success="Home/Index"},JsonRequestBehavior=JsonRequestBehavior.AllowGet};
+            return new JsonResult{Data = new {success=true},JsonRequestBehavior=JsonRequestBehavior.AllowGet};
         }
 
 
