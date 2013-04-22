@@ -123,6 +123,7 @@ namespace RWAT.Hubs
                     Clients.Caller.updateQuestionUpVoteImage(voteviewModel.NoUpVotePath);
                     userVote.SelectedUpVotePath = "";
                     userVote.Upvote = 0;
+                    question.Vote.UserVotes.Remove(userVote);
                 }
                 else
                 {
@@ -140,6 +141,7 @@ namespace RWAT.Hubs
                     Clients.Caller.updateQuestionDownVoteImage(voteviewModel.NoDownVotePath);
                     userVote.SelectedDownVotePath = "";
                     userVote.Upvote = 0;
+                    question.Vote.UserVotes.Remove(userVote);
                 }
                 else
                 {

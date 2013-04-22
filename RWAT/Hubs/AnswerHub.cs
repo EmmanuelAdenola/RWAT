@@ -121,6 +121,7 @@ namespace RWAT.Hubs
                     Clients.Caller.updateAnswerUpVoteImage(answer.AnswerId.ToString(),voteviewModel.NoUpVotePath);
                     userVote.SelectedUpVotePath = "";
                     userVote.Upvote = 0;
+                    answer.Vote.UserVotes.Remove(userVote);
                 }
                 else
                 {
@@ -138,6 +139,7 @@ namespace RWAT.Hubs
                     Clients.Caller.updateAnswerDownVoteImage(answer.AnswerId.ToString(),voteviewModel.NoDownVotePath);
                     userVote.SelectedDownVotePath = "";
                     userVote.Upvote = 0;
+                    answer.Vote.UserVotes.Remove(userVote);
                 }
                 else
                 {
