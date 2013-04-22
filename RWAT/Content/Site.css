@@ -93,6 +93,8 @@
 
 #questiontitle {
     border-bottom: 1px solid lavender;
+    word-wrap: break-word;
+    word-break: break-all;
 }
 
 .votewrapper {
