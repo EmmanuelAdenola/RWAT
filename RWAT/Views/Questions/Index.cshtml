@@ -36,13 +36,12 @@
                 <div class="numberofanswerstext">votes</div>
             </div>
             
-            <div  class="span5" style="margin-left: 50px; width: 200px;">
-                <a data-bind="attr:{href: Link , title: question.Title}, text: question.Title"></a> -
-                <div data-bind="text: question.Description"  class="questionindexdescription"></div>
-                <div data-bind="text: user.UserName"></div>
-                <div style="display: inline-block;">
-                    Asked: <div data-bind="text: question.DateAsked" style="font-weight: bold; display: inline-block;"></div>
-                </div>
-            </div>
+        <div  class="span5" style="margin-left: 50px; width:300px;">
+            <a data-bind="attr:{href: Link , title: question.Title}, text: question.Title"></a> -
+            <div data-bind="text: question.Description"  class="questionindexdescription"></div>
+            <b>Asked By:</b> 
+            <div data-bind="text: user.UserName" style="display: inline-block;color: blue;"></div>
+            <b>On:</b> <div data-bind="text: question.DateAsked" style="font-weight: bold;display: inline-block;color: red;"></div>
+        </div>
     </div>
 </div>
