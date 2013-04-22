@@ -82,7 +82,7 @@ namespace RWAT.Hubs
                 Clients.Caller.updateAnswerVote(answerid,currVote,
                                                   answerer.UserName.Equals(HttpContext.Current.User.Identity.Name)
                                                       ? "You cannot vote your own answer"
-                                                      : "Your must be logged in to vote");
+                                                      : "You must be logged in to vote");
             }
             else
             {

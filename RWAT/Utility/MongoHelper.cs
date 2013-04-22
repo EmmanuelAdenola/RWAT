@@ -10,7 +10,7 @@ namespace RWAT.Utility
 {
     public class MongoHelper
     {
-        private const string ConnectionString = "MongoDB";
+        private const string ConnectionString = "MONGOLAB_URI";
 
         public static MongoCollection<T> GetCollection<T>(string collection)
         {
