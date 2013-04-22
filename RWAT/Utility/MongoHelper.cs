@@ -10,15 +10,15 @@ namespace RWAT.Utility
 {
     public class MongoHelper
     {
-        private const string ConnectionString = "MONGOLAB_URI";
+        private const string ConnectionStringKey = "MONGOLAB_URI";
 
         public static MongoCollection<T> GetCollection<T>(string collection)
         {
-            var conn =
-                new MongoConnectionStringBuilder(
-                    ConfigurationManager.ConnectionStrings[ConnectionString].ConnectionString);
-            MongoClient mongoClient = new MongoClient(conn.ConnectionString);
+            string connectionString = ConfigurationManager.AppSettings[ConnectionStringKey];
+
+            MongoClient mongoClient = new MongoClient(connectionString);
             MongoServer mongoServer = mongoClient.GetServer();
+            var conn = new MongoUrlBuilder(connectionString);
             MongoDatabase mongoDatabase = mongoServer.GetDatabase(conn.DatabaseName);
 
             return mongoDatabase.GetCollection<T>(collection);
