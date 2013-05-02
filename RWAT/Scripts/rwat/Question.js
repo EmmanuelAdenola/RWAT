@@ -1,4 +1,5 @@
-﻿function VoteViewModel(voteModel) {
+﻿//ko represents usage of knockout namespace
+function VoteViewModel(voteModel) {
     var self = this;
     self.voteViewModel = voteModel;
     self.upVotePath = ko.observable((voteModel["SelectedUpVotePath"] != null && voteModel["SelectedUpVotePath"] != undefined  && voteModel["SelectedUpVotePath"] != ""  ) ? voteModel["SelectedUpVotePath"] : voteModel["NoUpVotePath"]);

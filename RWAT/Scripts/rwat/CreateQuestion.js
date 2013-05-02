@@ -1,4 +1,6 @@
-﻿function WordCountViewModel(initialWordCount) {
+﻿//ko represents usage of knockout namespace
+
+function WordCountViewModel(initialWordCount) {
     var self = this;
     self.wordCount = ko.observable(initialWordCount);
 

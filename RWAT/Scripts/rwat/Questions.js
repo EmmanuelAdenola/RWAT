@@ -1,4 +1,5 @@
-﻿function QuestionWrapper(questionWrapper) {
+﻿//ko represents usage of knockout namespace
+function QuestionWrapper(questionWrapper) {
     var self = this;
     self.question = questionWrapper["Question"];
     self.answers = questionWrapper["Answers"];
