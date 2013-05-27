@@ -1,6 +1,7 @@
 RWAT
 ====
-Author: C09305823
+Author: Emmanuel Adenola
+Student Number: C09305823
 website: rwat.apphb.com
 Rich Web Assignment
 
